@@ -27,7 +27,7 @@ def test_make_request_success(mock_get):
     mock_response = mock_get.return_value
     mock_response.status_code = 200
 
-    make_request()  # Функция должна успешно выполнить запрос
+    make_request()
 
 
 @patch('main.requests.get')
