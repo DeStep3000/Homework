@@ -1,7 +1,7 @@
-import pytest
-from pytest import raises
 from unittest.mock import patch
+
 import requests
+
 from crud import get_users, create_user, update_user, delete_user
 
 
@@ -96,7 +96,7 @@ def test_delete_user_success(mock_delete):
     mock_response.status_code = 204
 
     result = delete_user(1)
-    assert result is None  # У функции delete_user нет возвращаемого значения
+    assert result is None
 
 
 @patch('crud.requests.delete')
@@ -105,7 +105,7 @@ def test_delete_user_failure(mock_delete):
     mock_response.status_code = 400
 
     result = delete_user(1)
-    assert result is None  # У функции delete_user нет возвращаемого значения
+    assert result is None
 
 
 @patch('crud.requests.delete')
@@ -113,4 +113,4 @@ def test_delete_user_request_exception(mock_delete):
     mock_delete.side_effect = requests.RequestException
 
     result = delete_user(1)
-    assert result is None  # У функции delete_user нет возвращаемого значения
+    assert result is None

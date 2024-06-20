@@ -100,7 +100,7 @@ def delete_user(user_id: int) -> None:
     """
     try:
         response = requests.delete(f"{API_BASE_URL}/users/{user_id}")
-        if response.status_code == HTTPStatus.NO_CONTENT:
+        if response.status_code == HTTPStatus.NO_CONTENT or response.status_code == HTTPStatus.OK:
             print("Пользователь успешно удален")
         else:
             print(f"Ошибка: {response.status_code}")

@@ -1,9 +1,11 @@
 import time
+from typing import Callable
 
 import requests
 
 from crud import get_users, create_user, update_user, delete_user
-from typing import Callable
+
+RETRY_DELAY = 1
 
 
 # Декоратор для повторных попыток при сетевой ошибке
@@ -25,13 +27,17 @@ def retry(retry_count: int) -> callable:
     def decorator(func: Callable) -> Callable:
         def wrapper(*args, **kwargs):
             last_exception = None
-            for _ in range(retry_count):
+            for attempt in range(1, retry_count + 1):
                 try:
-                    return func(*args, **kwargs)
+                    print(f"Попытка {attempt}...")
+                    result = func(*args, **kwargs)
+                    print("Запрос успешно выполнен")
+                    return result
                 except requests.RequestException as e:
                     last_exception = e
-                    print(f"Ошибка запроса: {e}. Повторная попытка...")
-                    time.sleep(1)
+                    print(f"Ошибка запроса: {e}. Повторная попытка через {RETRY_DELAY} секунд...")
+                    time.sleep(RETRY_DELAY)
+            print("Все попытки исчерпаны")
             raise last_exception
 
         return wrapper

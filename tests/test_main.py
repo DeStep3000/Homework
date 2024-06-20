@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, Mock
 import requests
-from main import retry, make_request
+from main import retry, make_request, RETRY_DELAY
 
 
 # Тесты для декоратора retry
@@ -23,16 +23,26 @@ def test_retry_failure():
 
 
 @patch('main.requests.get')
-def test_make_request_success(mock_get):
+@patch('main.time.sleep', return_value=None)  # Мокаем time.sleep для ускорения тестов
+def test_make_request_success(mock_sleep, mock_get):
     mock_response = mock_get.return_value
     mock_response.status_code = 200
 
-    make_request()
+    with patch('builtins.print') as mock_print:
+        make_request()
+        mock_print.assert_any_call("Попытка 1...")
+        mock_print.assert_any_call("Запрос успешно выполнен")
 
 
 @patch('main.requests.get')
-def test_make_request_failure(mock_get):
-    mock_get.side_effect = requests.RequestException
+@patch('main.time.sleep', return_value=None)  # Мокаем time.sleep для ускорения тестов
+def test_make_request_failure(mock_sleep, mock_get):
+    mock_get.side_effect = requests.RequestException("Ошибка сети")
 
-    with pytest.raises(requests.RequestException):
+    with patch('builtins.print') as mock_print, pytest.raises(requests.RequestException):
         make_request()
+        mock_print.assert_any_call("Попытка 1...")
+        mock_print.assert_any_call("Ошибка запроса: Ошибка сети. Повторная попытка через 1 секунд...")
+        mock_print.assert_any_call("Попытка 2...")
+        mock_print.assert_any_call("Попытка 3...")
+        mock_print.assert_any_call("Все попытки исчерпаны")
