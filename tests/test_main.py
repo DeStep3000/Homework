@@ -1,7 +1,9 @@
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, Mock
 import requests
-from main import retry, make_request, RETRY_DELAY
+
+from main import retry, make_request
 
 
 # Тесты для декоратора retry
