@@ -20,16 +20,24 @@ def get_users(params: Optional[dict] = None) -> List[Dict[str, str]]:
     - Обрабатывает HTTP ошибки, например 404 NOT FOUND.
     - Выводит сообщение об ошибке и возвращает None при любой другой HTTP ошибке или сетевой проблеме.
     """
+    response = None
     try:
         response = requests.get(f"{API_BASE_URL}/users", params=params, raise_for_status=False)
-        if response.status_code == HTTPStatus.NOT_FOUND:
-            print("Ошибка: Пользователи не найдены (404)")
-            return []
-        response.raise_for_status()
-        return response.json()
     except requests.RequestException as e:
-        print(f'Ошибка запроса: {e}')
+        print(f"Ошибка запроса: {e}")
         return []
+
+    if response.status_code == HTTPStatus.NOT_FOUND:
+        print("Ошибка: Пользователи не найдены (404)")
+        return []
+
+    try:
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Ошибка при проверке статуса ответа: {e}")
+        return []
+
+    return response.json()
 
 
 def create_user(data: dict) -> Dict[str, str]:
@@ -46,13 +54,20 @@ def create_user(data: dict) -> Dict[str, str]:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
+    response = None
     try:
         response = requests.post(f"{API_BASE_URL}/users", json=data, raise_for_status=False)
-        response.raise_for_status()
-        return response.json()
     except requests.RequestException as e:
-        print(f'Ошибка запроса: {e}')
+        print(f"Ошибка запроса: {e}")
         return {}
+
+    try:
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Ошибка при проверке статуса ответа: {e}")
+        return {}
+
+    return response.json()
 
 
 def update_user(user_id: int, data: dict) -> Dict[str, str]:
@@ -70,13 +85,20 @@ def update_user(user_id: int, data: dict) -> Dict[str, str]:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
+    response = None
     try:
         response = requests.put(f"{API_BASE_URL}/users/{user_id}", json=data, raise_for_status=False)
-        response.raise_for_status()
-        return response.json()
     except requests.RequestException as e:
-        print(f'Ошибка запроса: {e}')
+        print(f"Ошибка запроса: {e}")
         return {}
+
+    try:
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Ошибка при проверке статуса ответа: {e}")
+        return {}
+
+    return response.json()
 
 
 def delete_user(user_id: int) -> None:
@@ -90,13 +112,21 @@ def delete_user(user_id: int) -> None:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об успешном удалении пользователя или сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
+    response = None
     try:
         response = requests.delete(f"{API_BASE_URL}/users/{user_id}", raise_for_status=False)
-        if response.status_code == HTTPStatus.NOT_FOUND:
-            print('Ошибка: 404')
-        elif response.status_code in (HTTPStatus.NO_CONTENT, HTTPStatus.OK):
-            print('Пользователь успешно удален')
-        else:
-            response.raise_for_status()
     except requests.RequestException as e:
-        print(f'Ошибка запроса: {e}')
+        print(f"Ошибка запроса: {e}")
+        return
+
+    if response.status_code == HTTPStatus.NOT_FOUND:
+        print("Ошибка: 404")
+        return
+
+    try:
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Ошибка при проверке статуса ответа: {e}")
+        return
+
+    print("Пользователь успешно удален")
