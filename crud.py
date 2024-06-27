@@ -20,7 +20,6 @@ def get_users(params: Optional[dict] = None) -> List[Dict[str, str]]:
     - Обрабатывает HTTP ошибки, например 404 NOT FOUND.
     - Выводит сообщение об ошибке и возвращает None при любой другой HTTP ошибке или сетевой проблеме.
     """
-    response = None
     try:
         response = requests.get(f"{API_BASE_URL}/users", params=params, raise_for_status=False)
     except requests.RequestException as e:
@@ -54,7 +53,6 @@ def create_user(data: dict) -> Dict[str, str]:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
-    response = None
     try:
         response = requests.post(f"{API_BASE_URL}/users", json=data, raise_for_status=False)
     except requests.RequestException as e:
@@ -85,7 +83,6 @@ def update_user(user_id: int, data: dict) -> Dict[str, str]:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
-    response = None
     try:
         response = requests.put(f"{API_BASE_URL}/users/{user_id}", json=data, raise_for_status=False)
     except requests.RequestException as e:
@@ -112,7 +109,6 @@ def delete_user(user_id: int) -> None:
     - Обрабатывает HTTP ошибки.
     - Выводит сообщение об успешном удалении пользователя или сообщение об ошибке при любой другой HTTP ошибке или сетевой проблеме.
     """
-    response = None
     try:
         response = requests.delete(f"{API_BASE_URL}/users/{user_id}", raise_for_status=False)
     except requests.RequestException as e:
