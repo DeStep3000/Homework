@@ -60,5 +60,5 @@ except requests.RequestException as e:
 
 ## Тестирование
 ```shell
-pytest test_crud.py
+pytest tests/test_crud.py
 ```
